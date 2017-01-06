@@ -1,19 +1,17 @@
-# usco-mobile
+# usco-web-viewer
 
-[![GitHub version](https://badge.fury.io/gh/usco%2Fusco-mobile.svg)](https://badge.fury.io/gh/usco%2Fusco-mobile)
+[![GitHub version](https://badge.fury.io/gh/usco%2Fusco-web-viewer.svg)](https://badge.fury.io/gh/usco%2Fusco-web-viewer)
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
-[![Build Status](https://travis-ci.org/usco/usco-mobile.svg)](https://travis-ci.org/usco/usco-mobile)
-[![Dependency Status](https://david-dm.org/usco/usco-mobile.svg)](https://david-dm.org/usco/usco-mobile)
-[![devDependency Status](https://david-dm.org/usco/usco-mobile/dev-status.svg)](https://david-dm.org/usco/usco-mobile#info=devDependencies)
+[![Build Status](https://travis-ci.org/usco/usco-web-viewer.svg)](https://travis-ci.org/usco/usco-web-viewer)
+[![Dependency Status](https://david-dm.org/usco/usco-web-viewer.svg)](https://david-dm.org/usco/usco-web-viewer)
+[![devDependency Status](https://david-dm.org/usco/usco-web-viewer/dev-status.svg)](https://david-dm.org/usco/usco-web-viewer#info=devDependencies)
 
-<img src="https://raw.githubusercontent.com/usco/usco-mobile/master/screenshot.png" />
+<img src="https://raw.githubusercontent.com/usco/usco-web-viewer/master/screenshot.png" />
 
 
-> Mobile app components for usco project
+> Web based viewer of usco project
 
-This is a small-ish (700 kb minified) mobile 3d file viewer component : minimal renderer + loading (stl only for now)
-tested and working on Ios/Android (as part of the Ultimaker 3 app : [android](https://play.google.com/store/apps/details?id=com.ultimaker.control)
-& [ios](https://itunes.apple.com/app/id1133171222))
+This is a small-ish (700 kb minified) web based 3d file viewer component : minimal renderer + loading (
 
 - coded in es6
 - uses streaming (node.js streams) to minimize memory consumption
@@ -89,5 +87,5 @@ Small note: If editing the Readme, please conform to the [standard-readme](https
 
 ## License
 
-[The MIT License (MIT)](https://github.com/usco/usco-mobile/blob/master/LICENSE)
+[The MIT License (MIT)](https://github.com/usco/usco-web-viewer/blob/master/LICENSE)
 (unless specified otherwise)
