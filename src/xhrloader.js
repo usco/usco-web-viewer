@@ -1,5 +1,3 @@
-import makeStlStream from 'usco-stl-parser'
-import { concatStream } from 'usco-stl-parser'
 import fetchStream from 'fetch-readablestream'
 // import XhrStream from 'xhr-stream'
 // require("web-streams-polyfill/dist/polyfill.min.js")
@@ -25,9 +23,8 @@ function supportsStreaming () {
   return fetchSupport || mozChunkSupport
 }
 
-export default function loadTest (uri) {
-  // console.log(`loading model from: ${uri}`)
-  const stlStream = makeStlStream({useWorker: true})
+export default function xhrLoader (parser, uri) {
+  console.log(`loading model from: ${uri}`, parser)
 
   const debugHelper = new Duplex({
     read() {
@@ -146,9 +143,12 @@ export default function loadTest (uri) {
 
     new HttpSourceStream(uri)
       .on('error', streamErrorHandler)
-      .pipe(makeStlStream({useWorker: true}))
+      .pipe(parser)
+      .on('data',function(data){
+        add(data)
+      })
       .on('error', streamErrorHandler)
-      .pipe(concatStream(data => add(data)))
-      .on('error', streamErrorHandler)
+      //.pipe(concatStream(data => add(data)))
+      //.on('error', streamErrorHandler)
   })
 }

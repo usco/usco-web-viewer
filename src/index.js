@@ -13,7 +13,9 @@ import { combine, merge, just, mergeArray, combineArray, from } from 'most'
 import limitFlow from './utils/most/limitFlow'
 
 // data inputs
-import loadAsStream from './xhrloader'
+import makeStlStream from 'usco-stl-parser'
+
+import xhrAsStream from './xhrloader'
 import fileAsStream from './fileLoader'
 
 // interactions
@@ -92,18 +94,20 @@ const draggedItems$ = dragAndDropEffect(dragEvents(document))
     return from(droppedData.data) // droppedData.data.map(just))
   })
   .multicast()
-  .tap(e => console.log('file', e))
 
 function geometrySources (modelUri$, modelFiles$) {
-  const fromUri$ = modelUri$.flatMap(loadAsStream)
-  const fromFile$ = modelFiles$.flatMap(fileAsStream) // .multicast()
+  const parsers = {
+    stl: makeStlStream
+  }
+  const format = 'stl'
+  const parser = parsers[format]
+  const parserParams = {useWorker: true}
 
-  // fromFile$.forEach(e=>console.log('dlf',e))
-  return fromFile$
-  return combineArray(function (...sources) {
-    console.log('here', sources)
-    return sources
-  }, [fromUri$, fromFile$])
+  // carefull ! stream parser function is NOT reuseable ! cannot bind() etc
+  const fromUri$ = modelUri$.flatMap(x => xhrAsStream(parser(parserParams), x))
+  const fromFile$ = modelFiles$.flatMap(x => fileAsStream(parser(parserParams), x))
+
+  return mergeArray([fromUri$, fromFile$]).tap(x => console.log('loaded model'))
 }
 
 const parsedGeometry$ = geometrySources(modelUri$, draggedItems$)
