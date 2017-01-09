@@ -9,10 +9,12 @@ import { default as prepareRender } from './rendering/render'
 import { params as cameraDefaults } from 'usco-orbit-controls'
 import camera from './utils/camera'
 
-import { combine, merge, just } from 'most'
+import { combine, merge, just, mergeArray, combineArray, from } from 'most'
 import limitFlow from './utils/most/limitFlow'
 
-import loadAsStream from './loader'
+// data inputs
+import loadAsStream from './xhrloader'
+import fileAsStream from './fileLoader'
 
 // interactions
 import controlsStream from './utils/controls/controlsStream'
@@ -20,6 +22,7 @@ import controlsStream from './utils/controls/controlsStream'
 
 import { interactionsFromEvents, pointerGestures } from './utils/interactions/pointerGestures'
 import { elementSize } from './utils/interactions/elementSizing'
+import { dragEvents, dragAndDropEffect } from './sideEffects/dragDropDriver'
 /* --------------------- */
 import adressBarDriver from './sideEffects/adressBarDriver'
 
@@ -79,8 +82,31 @@ const setMachineParams$ = merge(
   .tap(e => machineParamsLoaded(true))
   .multicast()
 
-const parsedSTL$ = modelUri$
-  .flatMap(loadAsStream)
+const draggedItems$ = dragAndDropEffect(dragEvents(document))
+  .flatMap(function (droppedData) {
+    console.log('droppedData', droppedData)
+    /*if (droppedData.type === 'file') {
+      droppedData.data.forEach(function (file) {})
+    }*/
+
+    return from(droppedData.data) // droppedData.data.map(just))
+  })
+  .multicast()
+  .tap(e => console.log('file', e))
+
+function geometrySources (modelUri$, modelFiles$) {
+  const fromUri$ = modelUri$.flatMap(loadAsStream)
+  const fromFile$ = modelFiles$.flatMap(fileAsStream) // .multicast()
+
+  // fromFile$.forEach(e=>console.log('dlf',e))
+  return fromFile$
+  return combineArray(function (...sources) {
+    console.log('here', sources)
+    return sources
+  }, [fromUri$, fromFile$])
+}
+
+const parsedGeometry$ = geometrySources(modelUri$, draggedItems$)
   .flatMapError(function (error) {
     modelLoaded(false) // error)
     return just(undefined)
@@ -89,7 +115,7 @@ const parsedSTL$ = modelUri$
   .multicast()
 
 const render = prepareRender(regl)
-const addEntities$ = entityPrep(parsedSTL$)
+const addEntities$ = entityPrep(parsedGeometry$)
 const setEntityBoundsStatus$ = merge(setMachineParams$, addEntities$.sample((x) => x, setMachineParams$))
 
 const entities$ = makeEntitiesModel({addEntities: addEntities$, setEntityBoundsStatus: setEntityBoundsStatus$})
@@ -162,7 +188,7 @@ const machineParams = {
 
 // for testing
 // informations about the active machine
-// window.nativeApi.setMachineParams(machineParams)
+window.nativeApi.setMachineParams(machineParams)
 
 /*setTimeout(function () {
   window.nativeApi.setMachineParams(machineParams)
