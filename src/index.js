@@ -9,14 +9,8 @@ import { default as prepareRender } from './rendering/render'
 import { params as cameraDefaults } from 'usco-orbit-controls'
 import camera from './utils/camera'
 
-import { combine, merge, just, mergeArray, combineArray, from } from 'most'
+import { combine, merge, just, mergeArray, combineArray, from, fromEvent } from 'most'
 import limitFlow from './utils/most/limitFlow'
-
-// data inputs
-import makeStlStream from 'usco-stl-parser'
-
-import xhrAsStream from './xhrloader'
-import fileAsStream from './fileLoader'
 
 // interactions
 import controlsStream from './utils/controls/controlsStream'
@@ -39,10 +33,11 @@ import makeInterface from './utils/mobilePlatforms/interface'
 import nativeApiDriver from './sideEffects/nativeApiDriver'
 import appMetadataDriver from './sideEffects/appMetadataDriver'
 
-// ////////////
+import { geometrySources } from './entities/geometrySources'
+//
 const {viewerReady, viewerVersion, modelLoaded, objectFitsPrintableVolume, machineParamsLoaded} = makeInterface()
 const nativeApi = nativeApiDriver()
-const appMetadata = appMetadataDriver()
+const appMetadata$ = appMetadataDriver()
 
 const regl = reglM({
   extensions: [
@@ -55,10 +50,9 @@ const regl = reglM({
 const container = document.querySelector('canvas')
 /* --------------------- */
 // handle context loss ?
-container.addEventListener('webglcontextlost', function (event) {
-  event.preventDefault()
-  modelLoaded(false)
-}, false)
+const glContextLost$ = fromEvent('webglcontextlost', container)
+  .tap(event => event.preventDefault())
+  .map(e => ({type: 'webglcontextlost', data: e}))
 
 const modelUri$ = merge(
   adressBarDriver,
@@ -84,35 +78,21 @@ const setMachineParams$ = merge(
   .tap(e => machineParamsLoaded(true))
   .multicast()
 
+
 const draggedItems$ = dragAndDropEffect(dragEvents(document))
   .flatMap(function (droppedData) {
     console.log('droppedData', droppedData)
     /*if (droppedData.type === 'file') {
       droppedData.data.forEach(function (file) {})
     }*/
-
     return from(droppedData.data) // droppedData.data.map(just))
   })
   .multicast()
 
-function geometrySources (modelUri$, modelFiles$) {
-  const parsers = {
-    stl: makeStlStream
-  }
-  const format = 'stl'
-  const parser = parsers[format]
-  const parserParams = {useWorker: true}
-
-  // carefull ! stream parser function is NOT reuseable ! cannot bind() etc
-  const fromUri$ = modelUri$.flatMap(x => xhrAsStream(parser(parserParams), x))
-  const fromFile$ = modelFiles$.flatMap(x => fileAsStream(parser(parserParams), x))
-
-  return mergeArray([fromUri$, fromFile$]).tap(x => console.log('loaded model'))
-}
-
 const parsedGeometry$ = geometrySources(modelUri$, draggedItems$)
   .flatMapError(function (error) {
     modelLoaded(false) // error)
+    console.error(`failed to load geometry ${error}`)
     return just(undefined)
   })
   .filter(x => x !== undefined)
@@ -162,6 +142,8 @@ visualState$
   })
   .forEach(x => x)
 
+
+// OUTPUTS (sink side effects)
 // boundsExceeded
 const objectFitsPrintableVolume$ = combine(function (entity, machineParams) {
   // console.log('objectFitsPrintableArea', entity, machineParams)
@@ -169,17 +151,15 @@ const objectFitsPrintableVolume$ = combine(function (entity, machineParams) {
 }, addEntities$, setMachineParams$)
   .tap(e => console.log('objectFitsPrintableVolume??', e))
   .multicast()
-
-// display app version, notify 'outside world the viewer is ready etc'
-appMetadata.forEach(function (data) {
+addEntities$.forEach(m => modelLoaded(true)) // side effect => dispatch to callback)
+objectFitsPrintableVolume$.forEach(objectFitsPrintableVolume) // dispatch message to signify out of bounds or not
+glContextLost$.forEach(x => modelLoaded(false))// handle gl context loss effect
+appMetadata$.forEach(function (data) {// display app version, notify 'outside world the viewer is ready etc'
   viewerVersion(`'${data.version}'`)
   viewerReady()
   console.info(`Viewer version: ${data.version}`)
 })
 
-// OUTPUTS (sink side effects)
-addEntities$.forEach(m => modelLoaded(true)) // side effect => dispatch to callback)
-objectFitsPrintableVolume$.forEach(objectFitsPrintableVolume) // dispatch message to signify out of bounds or not
 
 // for testing only
 const machineParams = {
@@ -193,7 +173,6 @@ const machineParams = {
 // for testing
 // informations about the active machine
 window.nativeApi.setMachineParams(machineParams)
-
 /*setTimeout(function () {
   window.nativeApi.setMachineParams(machineParams)
 }, 2000)
