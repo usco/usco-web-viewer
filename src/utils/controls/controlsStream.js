@@ -23,7 +23,7 @@ export default function controlsStream (interactions, cameraData, focuses$, enti
   newdiv.appendChild(textNode)
   document.body.appendChild(newdiv)*/
 
-  const dragMoves$ = gestures.dragMoves
+  const drags$ = gestures.drags
     // .throttle(16) // FIXME: not sure, could be optimized some more
     .filter(x => x !== undefined)
     .map(function (data) {
@@ -111,7 +111,7 @@ export default function controlsStream (interactions, cameraData, focuses$, enti
     const actions = {
       setProjection: projection$,
       applyZoom: zooms$,
-      applyRotation: dragMoves$,
+      applyRotation: drags$,
       //applyFocusOn: focuses$,
       zoomToFit: entityFocuses$,
       updateState: rate$
