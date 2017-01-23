@@ -17,8 +17,11 @@ export function makeEntitiesModel (actions) {
     })
   }
   function setEntityBoundsStatus (state, input) {
-    //console.log('setEntityBoundsStatus')
+    // console.log('setEntityBoundsStatus')
     return state.map(function (entity) {
+      if (!entity.hasOwnProperty('geometry')) {
+        return Object.assign({}, entity, {bounds: {outOfBounds: false}})
+      }
       const outOfBounds = isObjectOutsideBounds(input, entity)
       const bounds = Object.assign({}, entity.bounds, {outOfBounds})
       return Object.assign({}, entity, {bounds})
