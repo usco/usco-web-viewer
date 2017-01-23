@@ -1,6 +1,6 @@
 import { combineArray } from 'most'
-import makeDrawEnclosure from './rendering/drawEnclosure'
 import { drawStaticMesh2 as drawStaticMesh } from 'usco-render-utils'
+import makeDrawEnclosure from './rendering/drawEnclosure'
 
 export function makeVisualState (regl, machine$, entities$, camState$) {
   const machineWithVisuals$ = machine$
@@ -14,6 +14,7 @@ export function makeVisualState (regl, machine$, entities$, camState$) {
   const entitiesWithVisuals$ = entities$
     .map(function (entities) {
       return entities
+        .filter(entity => entity.hasOwnProperty('geometry'))
         .map(function (data) {
           const geometry = data.geometry
           const draw = drawStaticMesh(regl, {geometry: geometry}) // one command per mesh, but is faster
@@ -26,11 +27,12 @@ export function makeVisualState (regl, machine$, entities$, camState$) {
   // const outOfBoundsColor = [1., 0.6, 0.16, 1. ]//(red: 255, green: 140, blue: 16
   // const background = [1,1,1,1]
 
-  const outOfBoundsColor = [0.15, 0.15, 0.15, 0.3]
-  const background = [0.96, 0.96, 0.96, 1]
+  const outOfBoundsColor = [0.55, 0.55, 0.55, 0.8]
+  const background = [0.96, 0.96, 0.96, 0.3]
   return combineArray(
     function (entities, machine, camera) {
       const view = camera.view
+
       return {entities, machine, view, camera, background, outOfBoundsColor}
     }, [entitiesWithVisuals$, machineWithVisuals$, camState$])
 }
