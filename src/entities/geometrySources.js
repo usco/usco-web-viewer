@@ -9,6 +9,8 @@ import { getExtension } from '../utils/file'
 import { just, mergeArray, from } from 'most'
 import vec3 from 'gl-vec3'
 
+import {assembleStuff2, assembleStuff3} from './assemblors'
+
 export function geometrySources (modelUri$, modelFiles$) {
   const parsers = {
     'stl': makeStlStream,
@@ -34,33 +36,26 @@ export function geometrySources (modelUri$, modelFiles$) {
 
   return mergeArray([modelUri$, modelFiles$])
     .flatMap(function (modelData) {
-      // console.log(modelData)
       if (!modelData.hasOwnProperty('_finished')) {
-        return just(modelData)
+        //for stl & co
+        const data = {
+          transforms: {pos: [120, 0, 0.5], rot: [0, 0, Math.PI], sca: [1, 1, 1], parent: undefined}, // [0.2, 1.125, 1.125]},
+          geometry: modelData,
+          visuals: {
+            type: 'mesh',
+            visible: true,
+            color: [0.02, 0.7, 1, 1] // 07a9ff [1, 1, 0, 0.5],
+          },
+          meta: {
+            id: 0,
+            origin: ''
+          }}
+
+        return just(data)
       }
 
-      let entities = []
-
-      const parts = modelData.build.map(function (item) {
-        const {objectid} = item
-
-        function transform (positions, translateMat) {
-          for (var i = 0; i < positions.length; i += 3) {
-            let newPos = vec3.fromValues(positions[i], positions[i + 1], positions[i + 2])
-            vec3.transformMat4(newPos, newPos, translateMat)
-            positions[i] = newPos[0]
-            positions[i + 1] = newPos[1]
-            positions[i + 2] = newPos[2]
-          }
-        }
-
-        const geometry = modelData.objects[objectid]
-        // transform(geometry.positions, item.transforms)
-
-        return geometry
-      })
-      return from(parts)
-    // .filter(x=>x.positions.length>0)
-    })
-    .tap(x => console.log('loaded model', x))
+      let data = assembleStuff3(modelData)
+      console.log('done loading', data)
+      return from(data)
+  })
 }

@@ -13,8 +13,12 @@ export function injectBounds (entity) {
 
 // inject object transformation matrix : costly : only do it when changes happened to objects
 export function injectTMatrix (entity) {
+  if(entity.hasOwnProperty('transforms') && entity.transforms.hasOwnProperty('matrix')){
+    return entity
+  }
   const modelMat = computeTMatrixFromTransforms(entity.transforms)
-  const result = Object.assign({}, entity, {modelMat})
+  const transforms = Object.assign({}, entity.transforms, {matrix: modelMat})
+  const result = Object.assign({}, entity, {transforms})
   // console.log('result', result)
   return result
 }
