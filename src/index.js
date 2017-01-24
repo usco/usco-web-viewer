@@ -9,14 +9,15 @@ import { default as prepareRender } from './rendering/render'
 import { params as cameraDefaults } from 'usco-orbit-controls'
 import camera from './utils/camera'
 
-import { combine, merge, just, mergeArray, combineArray, from, fromEvent } from 'most'
+import { combine, merge, just, mergeArray, combineArray, from, fromEvent, never } from 'most'
 import limitFlow from './utils/most/limitFlow'
 
 // interactions
 import controlsStream from './utils/controls/controlsStream'
 // import pickStream from '../utils/picking/pickStream'
 
-import { interactionsFromEvents, pointerGestures } from './utils/interactions/pointerGestures'
+import { baseInteractionsFromEvents as interactionsFromEvents, pointerGestures } from 'most-gestures'
+
 import { elementSize } from './utils/interactions/elementSizing'
 import { dragEvents, dragAndDropEffect } from './sideEffects/dragDropDriver'
 /* --------------------- */
@@ -44,12 +45,15 @@ const regl = reglM({
     //  'oes_texture_float', // FIXME: for shadows, is it widely supported ?
     // 'EXT_disjoint_timer_query'// for gpu benchmarking only
   ],
-  profile: true
+  profile: true,
+  attributes: {
+    alpha: false
+  }
 })
 
 const container = document.querySelector('canvas')
 /* --------------------- */
-// handle context loss ?
+// side effect : source
 const glContextLost$ = fromEvent('webglcontextlost', container)
   .tap(event => event.preventDefault())
   .map(e => ({type: 'webglcontextlost', data: e}))
@@ -89,7 +93,7 @@ const draggedItems$ = dragAndDropEffect(dragEvents(document))
   })
   .multicast()
 
-const parsedGeometry$ = geometrySources(modelUri$, draggedItems$)
+const parsedModelData$ = geometrySources(modelUri$, draggedItems$)
   .flatMapError(function (error) {
     modelLoaded(false) // error)
     console.error(`failed to load geometry ${error}`)
@@ -99,31 +103,32 @@ const parsedGeometry$ = geometrySources(modelUri$, draggedItems$)
   .multicast()
 
 const render = prepareRender(regl)
-const addEntities$ = entityPrep(parsedGeometry$)
+const addEntities$ = entityPrep(parsedModelData$)
 const setEntityBoundsStatus$ = merge(setMachineParams$, addEntities$.sample((x) => x, setMachineParams$))
 
 const entities$ = makeEntitiesModel({addEntities: addEntities$, setEntityBoundsStatus: setEntityBoundsStatus$})
 const machine$ = makeMachineModel({setMachineParams: setMachineParams$})
 
-const appState$ = makeState(machine$, entities$)
-  .forEach(x => x)
+/*const appState$ = makeState(machine$, entities$)
+  .forEach(x => x)*/
 
-// interactions : camera controls
+
+// interactions : camera controls etc
 const baseInteractions$ = interactionsFromEvents(container)
 const gestures = pointerGestures(baseInteractions$)
-const focuses$ = addEntities$.map(function (nEntity) {
+const focuses$ = never()/*addEntities$.map(function (nEntity) {
   const mid = nEntity.bounds.max.map(function (pos, idx) {
     return pos - nEntity.bounds.min[idx]
   })
   return mid
-})
+})*/
 
-const entityFocuses$ = addEntities$
+const entityFocuses$ = never()//addEntities$
 const projection$ = elementSize(container)
-/*baseInteractions$.taps
-focuses.forEach(e=>console.log('tapping'))*/
+
 const camState$ = controlsStream({gestures}, {settings: cameraDefaults, camera}, focuses$, entityFocuses$, projection$)
 
+// final states
 const visualState$ = makeVisualState(regl, machine$, entities$, camState$)
   .multicast()
   .flatMapError(function (error) {
@@ -145,6 +150,7 @@ visualState$
 
 // OUTPUTS (sink side effects)
 // boundsExceeded
+/*
 const objectFitsPrintableVolume$ = combine(function (entity, machineParams) {
   // console.log('objectFitsPrintableArea', entity, machineParams)
   return !isObjectOutsideBounds(machineParams, entity)
@@ -158,7 +164,7 @@ appMetadata$.forEach(function (data) {// display app version, notify 'outside wo
   viewerVersion(`'${data.version}'`)
   viewerReady()
   console.info(`Viewer version: ${data.version}`)
-})
+})*/
 
 
 // for testing only
