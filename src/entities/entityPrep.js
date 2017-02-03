@@ -20,7 +20,7 @@ export default function entityPrep (rawModelData$) {
 
   const addedEntities$ = entitiesWithoutGeometry$
     .merge(entitiesWithGeometry$)
-    //.map(injectTMatrix)
+    .map(injectTMatrix)
     .tap(entity => console.log('entity done processing', entity))
     .multicast()
 

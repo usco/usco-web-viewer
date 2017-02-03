@@ -86,7 +86,7 @@ export function assembleStuff3 (data) {
     }
     // make entities and components
     let entity = {id: object.objectid}
-    console.log('entity',entity, object)
+    console.log('entity', entity, object)
     if (object.geometry && object.geometry.positions.length > 0) {
       entity.geometry = object.geometry
     }
@@ -98,10 +98,26 @@ export function assembleStuff3 (data) {
       visible: true,
       color: [0.02, 0.7, 1, 1] // 07a9ff [1, 1, 0, 0.5],
     }
+    // FIXME: doubt this should be here
+    if (object.pid && object.p) {
+      const pid = parseInt(object.pid, 10)
+      const p = parseInt(object.p, 10)
+      if (data.resources[pid]) {
+        entity.visuals.color = data.resources[pid].colors[p]
+      }
+    }else{
+      //FIXME: full on hack, or is it ? still seems spec compliant
+      if(parent && parent.visuals && parent.visuals.color){
+        entity.visuals.color = parent.visuals.color
+      }
+    }
     entities.push(entity)
 
     object.components.forEach(function (compo) {
-      makeEntity(lookup(compo.objectid), entity)
+      // console.log('component', compo)
+      // FIXME: not 100% sure about the way to deal with transforms
+      let object = Object.assign({}, lookup(compo.objectid), {transforms: compo.transforms})
+      makeEntity(object, entity)
     })
     return entity
   }
@@ -112,5 +128,5 @@ export function assembleStuff3 (data) {
     makeEntity(object)
   })
 
-  return entities
+  return {entities, resources: []}
 }

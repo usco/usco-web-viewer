@@ -7,11 +7,10 @@ import fileAsStream from '../fileLoader'
 
 import { getExtension } from '../utils/file'
 import { just, mergeArray, from } from 'most'
-import vec3 from 'gl-vec3'
 
 import {assembleStuff2, assembleStuff3} from './assemblors'
 
-export function geometrySources (modelUri$, modelFiles$) {
+export function dataSources (modelUri$, modelFiles$) {
   const parsers = {
     'stl': makeStlStream,
     '3mf': make3mfStream
@@ -54,7 +53,7 @@ export function geometrySources (modelUri$, modelFiles$) {
         return just(data)
       }
 
-      let data = assembleStuff3(modelData)
+      let data = assembleStuff3(modelData).entities
       console.log('done loading', data)
       return from(data)
   })

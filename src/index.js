@@ -34,7 +34,7 @@ import makeInterface from './utils/mobilePlatforms/interface'
 import nativeApiDriver from './sideEffects/nativeApiDriver'
 import appMetadataDriver from './sideEffects/appMetadataDriver'
 
-import { geometrySources } from './entities/geometrySources'
+import { dataSources } from './entities/dataSources'
 //
 const {viewerReady, viewerVersion, modelLoaded, objectFitsPrintableVolume, machineParamsLoaded} = makeInterface()
 const nativeApi = nativeApiDriver()
@@ -93,7 +93,7 @@ const draggedItems$ = dragAndDropEffect(dragEvents(document))
   })
   .multicast()
 
-const parsedModelData$ = geometrySources(modelUri$, draggedItems$)
+const parsedModelData$ = dataSources(modelUri$, draggedItems$)
   .flatMapError(function (error) {
     modelLoaded(false) // error)
     console.error(`failed to load geometry ${error}`)
