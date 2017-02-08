@@ -2,15 +2,15 @@
 import makeStlStream from 'usco-stl-parser'
 import make3mfStream from 'usco-3mf-parser'
 
-import xhrAsStream from '../xhrloader'
-import fileAsStream from '../fileLoader'
+import xhrAsStream from '../io/xhrloader'
+import fileAsStream from '../io/fileLoader'
 
 import { getExtension } from '../utils/file'
 import { just, mergeArray, from } from 'most'
 
 import {assembleStuff2, assembleStuff3} from './assemblors'
 
-export function dataSources (modelUri$, modelFiles$) {
+export function combineDataSources (modelUri$, modelFiles$) {
   const parsers = {
     'stl': makeStlStream,
     '3mf': make3mfStream
