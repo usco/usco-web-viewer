@@ -5,7 +5,7 @@ const reglM = require('regl')
 // const regl = require('regl')(require('gl')(256, 256))
 // use this one for rendering inside a specific canvas/element
 // var regl = require('regl')(canvasOrElement)
-import { default as prepareRender } from './rendering/render'
+//import { default as render } from './rendering/render'
 import { params as cameraDefaults } from 'usco-orbit-controls'
 import camera from './utils/camera'
 
@@ -102,7 +102,7 @@ const parsedModelData$ = dataSources(modelUri$, draggedItems$)
   .filter(x => x !== undefined)
   .multicast()
 
-const render = prepareRender(regl)
+const render = require('./rendering/render')(regl)
 const addEntities$ = entityPrep(parsedModelData$)
 const setEntityBoundsStatus$ = merge(setMachineParams$, addEntities$.sample((x) => x, setMachineParams$))
 

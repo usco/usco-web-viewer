@@ -1,12 +1,12 @@
 import { combineArray } from 'most'
 import { drawStaticMesh2 as drawStaticMesh } from 'usco-render-utils'
-import makeDrawEnclosure from './rendering/drawEnclosure'
+import drawEnclosure from './rendering/drawEnclosure'
 
 export function makeVisualState (regl, machine$, entities$, camState$) {
   const machineWithVisuals$ = machine$
     .map(function (machine) {
       if (machine !== undefined) {
-        const draw = makeDrawEnclosure(regl, machine.params)
+        const draw = drawEnclosure(regl, machine.params)
         return Object.assign({}, machine, {draw})
       }
     })

@@ -3,21 +3,19 @@ import { drawTri as prepareDrawTriangle } from 'usco-render-utils'
 import { drawCuboid as prepareDrawCuboid } from 'usco-render-utils'
 import { drawCuboidFromCoords } from 'usco-render-utils'
 import { drawStaticMesh as makeDrawStaticMesh } from 'usco-render-utils'
-
 import { computeTMatrixFromTransforms as model } from 'usco-transform-utils'
 
 // import svgStringAsReglTexture from '../../common/utils/image/svgStringAsReglTexture'
 // import svgStringAsGeometry from '../../common/utils/geometry/svgStringAsGeometry'
-import getBrandingSvgGeometry from '../branding/getBrandingSvgGeometry'
+import getBrandingSvgGeometry from '@usco/um-branding/dist/getBrandingSvgGeometry'
 // import getBrandingSvg from '../../branding/getBrandingSvg'
 // import makeDrawImgPlane from './drawImgPlane'
 
 import { hexToRgba } from 'usco-image-utils/dist/colorConversions'
 import makeDrawPrintableArea from 'usco-render-utils/dist/drawPrintableArea'
 
-export default function makeDrawEnclosure (regl, params) {
+export default function drawEnclosure (regl, params) {
   const {machine_disallowed_areas, machine_volume, name} = params
-  console.log('params', params)
 
   const drawGrid = prepareDrawGrid(regl, { size: machine_volume, ticks: 50, centered: true })
   const drawGridDense = prepareDrawGrid(regl, { size: machine_volume, ticks: 10, centered: true })
