@@ -1,5 +1,5 @@
-import { update, rotate, zoom, setFocus } from 'usco-orbit-controls'
-import { computeCameraToFitBounds, cameraOffsetToEntityBoundsCenter } from 'usco-camera-utils'
+import { update, rotate, zoom, setFocus } from '@usco/orbit-controls'
+import { computeCameraToFitBounds, cameraOffsetToEntityBoundsCenter } from '@usco/camera-utils'
 
 import { model } from '../modelUtils'
 import {animationFrames, rafStream} from '../most/animationFrames'

@@ -1,7 +1,7 @@
-import makeWrapperScope from 'usco-render-utils/dist/wrapperScope'
+import makeWrapperScope from '@usco/render-utils/dist/wrapperScope'
 
-import { computeTMatrixFromTransforms as model } from 'usco-transform-utils'
-import { drawGrid as prepareDrawGrid } from 'usco-render-utils'
+import { computeTMatrixFromTransforms as model } from '@usco/transform-utils'
+import { drawGrid as prepareDrawGrid } from '@usco/render-utils'
 
 module.exports = function render (regl, params) {
   const wrapperScope = makeWrapperScope(regl)

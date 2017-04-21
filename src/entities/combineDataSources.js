@@ -38,7 +38,7 @@ export function combineDataSources (modelUri$, modelFiles$) {
       if (!modelData.hasOwnProperty('_finished')) {
         //for stl & co
         const data = {
-          transforms: {pos: [120, 0, 0.5], rot: [0, 0, Math.PI], sca: [1, 1, 1], parent: undefined}, // [0.2, 1.125, 1.125]},
+          transforms: {pos: [0, 0, 0], rot: [0, 0, Math.PI], sca: [1, 1, 1], parent: undefined}, // [0.2, 1.125, 1.125]},
           geometry: modelData,
           visuals: {
             type: 'mesh',

@@ -1,9 +1,9 @@
-import { drawGrid as prepareDrawGrid } from 'usco-render-utils'
-import { drawTri as prepareDrawTriangle } from 'usco-render-utils'
-import { drawCuboid as prepareDrawCuboid } from 'usco-render-utils'
-import { drawCuboidFromCoords } from 'usco-render-utils'
-import { drawStaticMesh as makeDrawStaticMesh } from 'usco-render-utils'
-import { computeTMatrixFromTransforms as model } from 'usco-transform-utils'
+import { drawGrid as prepareDrawGrid } from '@usco/render-utils'
+import { drawTri as prepareDrawTriangle } from '@usco/render-utils'
+import { drawCuboid as prepareDrawCuboid } from '@usco/render-utils'
+import { drawCuboidFromCoords } from '@usco/render-utils'
+import { drawStaticMesh as makeDrawStaticMesh } from '@usco/render-utils'
+import { computeTMatrixFromTransforms as model } from '@usco/transform-utils'
 
 // import svgStringAsReglTexture from '../../common/utils/image/svgStringAsReglTexture'
 // import svgStringAsGeometry from '../../common/utils/geometry/svgStringAsGeometry'
@@ -11,8 +11,8 @@ import getBrandingSvgGeometry from '@usco/um-branding/dist/getBrandingSvgGeometr
 // import getBrandingSvg from '../../branding/getBrandingSvg'
 // import makeDrawImgPlane from './drawImgPlane'
 
-import { hexToRgba } from 'usco-image-utils/dist/colorConversions'
-import makeDrawPrintableArea from 'usco-render-utils/dist/drawPrintableArea'
+import { hexToRgba } from '@usco/image-utils/dist/colorConversions'
+import makeDrawPrintableArea from '@usco/render-utils/dist/drawPrintableArea'
 
 export default function drawEnclosure (regl, params) {
   const {machine_disallowed_areas, machine_volume, name} = params

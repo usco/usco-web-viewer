@@ -1,6 +1,6 @@
 // helpers
-import { centerGeometry } from 'usco-geometry-utils'
-import { offsetTransformsByBounds } from 'usco-transform-utils'
+import { centerGeometry } from '@usco/geometry-utils'
+import { offsetTransformsByBounds } from '@usco/transform-utils'
 import { injectNormals, injectTMatrix, injectBounds } from './prepHelpers'
 
 /* Pipeline:

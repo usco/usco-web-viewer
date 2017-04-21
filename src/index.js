@@ -6,7 +6,7 @@ const reglM = require('regl')
 // use this one for rendering inside a specific canvas/element
 // var regl = require('regl')(canvasOrElement)
 //import { default as render } from './rendering/render'
-import { params as cameraDefaults } from 'usco-orbit-controls'
+import { params as cameraDefaults } from '@usco/orbit-controls'
 import camera from './utils/camera'
 
 import { combine, merge, just, mergeArray, combineArray, from, fromEvent, never } from 'most'
@@ -23,20 +23,18 @@ import { dragEvents, dragAndDropEffect } from './sideEffects/dragDropDriver'
 /* --------------------- */
 import adressBarDriver from './sideEffects/adressBarDriver'
 
-import { isObjectOutsideBounds } from 'usco-printing-utils'
+import { isObjectOutsideBounds } from '@usco/printing-utils'
 
 import entityPrep from './entities/entityPrep'
 import { makeEntitiesModel, makeMachineModel } from './state'
 import { makeVisualState } from './visualState'
 
 // basic api
-import makeInterface from './utils/mobilePlatforms/interface'
 import nativeApiDriver from './sideEffects/nativeApiDriver'
 import appMetadataDriver from './sideEffects/appMetadataDriver'
 
 import { combineDataSources } from './entities/combineDataSources'
 //
-const {viewerReady, viewerVersion, modelLoaded, objectFitsPrintableVolume, machineParamsLoaded} = makeInterface()
 const nativeApi = nativeApiDriver()
 const appMetadata$ = appMetadataDriver()
 
@@ -75,11 +73,11 @@ const setMachineParams$ = merge(
 )
   .flatMapError(function (error) {
     // console.log('error', error)
-    machineParamsLoaded(false) // error)
+    //machineParamsLoaded(false) // error)
     return just(null)
   })
   .filter(x => x !== null)
-  .tap(e => machineParamsLoaded(true))
+  //.tap(e => machineParamsLoaded(true))
   .multicast()
 
 
@@ -176,6 +174,8 @@ const machineParams = {
   'printable_area': [200, 200]
 }
 
+
+console.log('testing')
 // for testing
 // informations about the active machine
 window.nativeApi.setMachineParams(machineParams)

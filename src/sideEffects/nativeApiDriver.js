@@ -1,6 +1,6 @@
 // setModelUri('http://localhost:8080/data/sanguinololu_enclosure_full.stl')
 import callBackToStream from '../utils/most/callBackToStream'
-import { formatRawMachineData } from 'usco-printing-utils'
+import { formatRawMachineData } from '@usco/printing-utils'
 
 export default function nativeApiDriver (out$) {
   const makeModelUriFromCb = callBackToStream()
@@ -18,5 +18,6 @@ export default function nativeApiDriver (out$) {
 
   return {
     machineParams$,
-  modelUri$}
+    modelUri$
+  }
 }
